@@ -1,5 +1,8 @@
 package com.progressoft.fxdeals.exception;
 
+/**
+ * Exception thrown when data validation fails.
+ */
 public class ValidationException extends RuntimeException {
 
     public ValidationException(String message) {
