@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-deal-table
+      author: system
+      changes:
+        - createTable:
+            tableName: deals
+            columns:
+              - column:
+                  name: deal_id
+                  type: VARCHAR(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: from_currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: to_currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deal_timestamp
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deal_amount
+                  type: DECIMAL(19,4)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: deals
+            columnNames: deal_id
+            constraintName: uk_deal_id
+      rollback:
+        - dropTable:
+            tableName: deals
