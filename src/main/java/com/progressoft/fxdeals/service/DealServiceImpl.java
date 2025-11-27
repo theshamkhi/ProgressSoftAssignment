@@ -20,13 +20,6 @@ public class DealServiceImpl implements DealService {
 
     private final DealRepository dealRepository;
 
-    /**
-     * Saves a deal without throwing exceptions on duplicates.
-     * Used for batch operations where we want to continue processing.
-     *
-     * @param deal the deal to save
-     * @return true if saved successfully, false if duplicate
-     */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public boolean saveDeal(Deal deal) {
