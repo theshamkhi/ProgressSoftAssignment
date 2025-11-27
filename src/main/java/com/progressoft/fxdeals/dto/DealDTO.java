@@ -1,33 +1,30 @@
-package com.progressoft.fxdeals.dto.request;
+package com.progressoft.fxdeals.dto;
 
 import com.opencsv.bean.CsvBindByName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class DealDTO {
 
-    @CsvBindByName(column = "dealId", required = true)
+    @CsvBindByName(column = "dealId")
     private String dealId;
 
-    @CsvBindByName(column = "fromCurrency", required = true)
+    @CsvBindByName(column = "fromCurrency")
     private String fromCurrency;
 
-    @CsvBindByName(column = "toCurrency", required = true)
+    @CsvBindByName(column = "toCurrency")
     private String toCurrency;
 
-    @CsvBindByName(column = "dealTimestamp", required = true)
+    @CsvBindByName(column = "dealTimestamp")
     private String dealTimestamp;
 
-    @CsvBindByName(column = "dealAmount", required = true)
+    @CsvBindByName(column = "dealAmount")
     private String dealAmount;
 
     private LocalDateTime parsedTimestamp;
