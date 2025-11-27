@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fxdeals-postgres
+    environment:
+      POSTGRES_DB: fxdeals
+      POSTGRES_USER: fxuser
+      POSTGRES_PASSWORD: fxpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fxuser -d fxdeals"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fxdeals-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fxdeals-app
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/fxdeals
+      DATABASE_USERNAME: fxuser
+      DATABASE_PASSWORD: fxpass
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/deals/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - fxdeals-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  fxdeals-network:
+    driver: bridge
