@@ -12,23 +12,11 @@ public class DealMapper {
 
     public static Deal toEntity(DealDTO dealDTO) {
         return Deal.builder()
-                .dealId(dealDTO.getDealId().trim())
+                .dealId(dealDTO.getDealId())
                 .fromCurrency(dealDTO.getFromCurrency())
                 .toCurrency(dealDTO.getToCurrency())
                 .dealTimestamp(dealDTO.getParsedTimestamp())
                 .dealAmount(dealDTO.getParsedAmount())
-                .build();
-    }
-
-    public static DealDTO toDTO(Deal deal) {
-        return DealDTO.builder()
-                .dealId(deal.getDealId())
-                .fromCurrency(deal.getFromCurrency())
-                .toCurrency(deal.getToCurrency())
-                .dealTimestamp(deal.getDealTimestamp().toString())
-                .dealAmount(deal.getDealAmount().toString())
-                .parsedTimestamp(deal.getDealTimestamp())
-                .parsedAmount(deal.getDealAmount())
                 .build();
     }
 }

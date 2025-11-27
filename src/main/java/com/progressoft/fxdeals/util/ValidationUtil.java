@@ -32,10 +32,21 @@ public class ValidationUtil {
     private ValidationUtil() {}
 
     public static void validateDeal(DealDTO dealDTO) throws ValidationException {
+        // Trim all string inputs consistently
+        trimFields(dealDTO);
+
         validateMandatoryFields(dealDTO);
         validateCurrencyCodes(dealDTO);
         validateAndParseTimestamp(dealDTO);
         validateAndParseAmount(dealDTO);
+    }
+
+    private static void trimFields(DealDTO dealDTO) {
+        if (dealDTO.getDealId() != null) dealDTO.setDealId(dealDTO.getDealId().trim());
+        if (dealDTO.getFromCurrency() != null) dealDTO.setFromCurrency(dealDTO.getFromCurrency().trim());
+        if (dealDTO.getToCurrency() != null) dealDTO.setToCurrency(dealDTO.getToCurrency().trim());
+        if (dealDTO.getDealTimestamp() != null) dealDTO.setDealTimestamp(dealDTO.getDealTimestamp().trim());
+        if (dealDTO.getDealAmount() != null) dealDTO.setDealAmount(dealDTO.getDealAmount().trim());
     }
 
     private static void validateMandatoryFields(DealDTO dealDTO) throws ValidationException {
@@ -47,8 +58,8 @@ public class ValidationUtil {
     }
 
     private static void validateCurrencyCodes(DealDTO dealDTO) throws ValidationException {
-        String fromCurrency = dealDTO.getFromCurrency().trim().toUpperCase();
-        String toCurrency = dealDTO.getToCurrency().trim().toUpperCase();
+        String fromCurrency = dealDTO.getFromCurrency().toUpperCase();
+        String toCurrency = dealDTO.getToCurrency().toUpperCase();
 
         if (!ISO_CURRENCY_PATTERN.matcher(fromCurrency).matches()) {
             throw new ValidationException(
@@ -91,7 +102,7 @@ public class ValidationUtil {
 
     private static void validateAndParseTimestamp(DealDTO dealDTO) throws ValidationException {
         try {
-            LocalDateTime ts = LocalDateTime.parse(dealDTO.getDealTimestamp().trim(), ISO_TIMESTAMP_FORMATTER);
+            LocalDateTime ts = LocalDateTime.parse(dealDTO.getDealTimestamp(), ISO_TIMESTAMP_FORMATTER);
             dealDTO.setParsedTimestamp(ts);
         } catch (DateTimeParseException e) {
             throw new ValidationException(
@@ -103,7 +114,7 @@ public class ValidationUtil {
     private static void validateAndParseAmount(DealDTO dealDTO) throws ValidationException {
         BigDecimal amount;
         try {
-            amount = new BigDecimal(dealDTO.getDealAmount().trim());
+            amount = new BigDecimal(dealDTO.getDealAmount());
         } catch (NumberFormatException e) {
             throw new ValidationException(
                     String.format("Invalid amount format: '%s'. Must be a valid decimal number.",
@@ -119,6 +130,6 @@ public class ValidationUtil {
     }
 
     private static boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
+        return value == null || value.isEmpty();
     }
 }

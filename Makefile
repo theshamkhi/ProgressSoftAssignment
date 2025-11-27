@@ -1,36 +1,53 @@
-.PHONY: help build test clean run docker docker-up docker-down docker-reset docker-rebuild docker-logs coverage
+.PHONY: help build test coverage clean run docker-build docker-up docker-down docker-restart docker-sync docker-reset docker-rebuild logs logs-db logs-all db-shell health verify
+
+.DEFAULT_GOAL := help
 
 help:
 	@echo "FX Deals Importer - Available Commands"
-	@echo "======================================="
-	@echo "make build        - Build the project with Maven"
-	@echo "make test         - Run unit tests"
-	@echo "make coverage     - Generate test coverage report"
-	@echo "make run          - Run the application locally"
-	@echo "make clean        - Clean build artifacts"
-	@echo "make docker       - Build Docker image"
-	@echo "make docker-up    - Start Docker containers"
-	@echo "make docker-down  - Stop Docker containers"
-	@echo "make docker-logs  - View Docker container logs"
-	@echo "make docker-reset - Stop containers and remove volumes"
-	@echo "make docker-rebuild - Rebuild from scratch"
+	@echo ""
+	@echo "Build Commands:"
+	@echo "  build          - Build the application with Maven"
+	@echo "  clean          - Clean build artifacts and logs"
+	@echo "  verify         - Run full verification (build + test + coverage)"
+	@echo ""
+	@echo "Testing Commands:"
+	@echo "  test           - Run all tests"
+	@echo "  coverage       - Run tests with coverage report"
+	@echo ""
+	@echo "Local Commands:"
+	@echo "  run            - Run application locally"
+	@echo ""
+	@echo "Docker Commands:"
+	@echo "  docker-build   - Build Docker image"
+	@echo "  docker-up      - Start all containers"
+	@echo "  docker-down    - Stop and remove containers"
+	@echo "  docker-restart - Restart all containers"
+	@echo "  docker-sync    - Sync code changes to container (no rebuild)"
+	@echo "  docker-reset   - Stop containers and remove volumes"
+	@echo "  docker-rebuild - Rebuild from scratch (no cache)"
+	@echo ""
+	@echo "Debug Commands:"
+	@echo "  logs           - View application logs"
+	@echo "  logs-db        - View database logs"
+	@echo "  logs-all       - View all logs"
+	@echo "  db-shell       - Open PostgreSQL shell"
+	@echo "  health         - Check application health"
+	@echo ""
 
 build:
-	@echo "Building the project..."
+	@echo "Building application..."
 	mvn clean package -DskipTests
+	@echo "Build completed successfully"
 
 test:
 	@echo "Running tests..."
 	mvn test
+	@echo "Tests completed"
 
 coverage:
-	@echo "Generating coverage report..."
+	@echo "Running tests with coverage..."
 	mvn clean test jacoco:report
-	@echo "Coverage report available at: target/site/jacoco/index.html"
-
-run:
-	@echo "Running application..."
-	mvn spring-boot:run
+	@echo "Coverage report generated: target/site/jacoco/index.html"
 
 clean:
 	@echo "Cleaning build artifacts..."
@@ -38,23 +55,41 @@ clean:
 	@if [ -d "logs" ]; then \
 		echo "Removing logs directory..."; \
 		rm -rf logs/; \
-	else \
-		echo "No logs directory to remove."; \
 	fi
+	@echo "Cleaned successfully"
 
-docker:
+run:
+	@echo "Running application locally..."
+	mvn spring-boot:run
+
+docker-build:
 	@echo "Building Docker image..."
-	docker build -t fxdeals:latest .
+	docker-compose build
+	@echo "Docker image built successfully"
 
 docker-up:
-	@echo "Starting Docker containers..."
+	@echo "Starting containers..."
 	docker-compose up -d
+	@echo "Containers started successfully"
 	@echo "Application starting... Wait for healthcheck to pass"
-	@echo "Access the application at: http://localhost:8080"
+	@echo "API: http://localhost:8080"
 
 docker-down:
-	@echo "Stopping Docker containers..."
+	@echo "Stopping containers..."
 	docker-compose down
+	@echo "Containers stopped successfully"
+
+docker-restart: docker-down docker-up
+
+docker-sync:
+	@echo "Syncing code changes to container..."
+	@echo "Step 1/3: Rebuilding JAR..."
+	mvn clean package -DskipTests
+	@echo "Step 2/3: Copying JAR to container..."
+	docker cp target/fxdeals-0.0.1-SNAPSHOT.jar fxdeals-app:/app/app.jar
+	@echo "Step 3/3: Restarting application..."
+	docker-compose restart app
+	@echo "Changes synced successfully - app restarted"
 
 docker-reset:
 	@echo "Stopping and removing containers, volumes, and orphans..."
@@ -62,9 +97,11 @@ docker-reset:
 	@echo "Pruning dangling containers and images..."
 	docker container prune -f
 	docker image prune -f
-	@echo "Removing logs directory..."
-	@if [ -d "logs" ]; then rm -rf logs/; fi
-	@echo "Full Docker reset completed."
+	@if [ -d "logs" ]; then \
+		echo "Removing logs directory..."; \
+		rm -rf logs/; \
+	fi
+	@echo "Full Docker reset completed"
 
 docker-rebuild:
 	@echo "Rebuilding Docker images from scratch..."
@@ -74,10 +111,32 @@ docker-rebuild:
 	docker-compose up -d
 	@echo "Rebuild complete. Application available at http://localhost:8080"
 
-docker-logs:
-	@echo "Showing container logs..."
+logs:
+	@echo "Viewing application logs..."
 	docker-compose logs -f app
 
-docker-logs-all:
-	@echo "Showing all container logs..."
+logs-db:
+	@echo "Viewing database logs..."
+	docker-compose logs -f postgres
+
+logs-all:
+	@echo "Viewing all logs..."
 	docker-compose logs -f
+
+db-shell:
+	@echo "Opening PostgreSQL shell..."
+	docker-compose exec postgres psql -U fxuser -d fxdeals
+
+health:
+	@echo "Checking application health..."
+	@curl -f http://localhost:8080/api/deals/health || echo "Application not responding"
+
+verify:
+	@echo "Running full verification..."
+	@echo "Step 1/3: Building..."
+	@$(MAKE) build
+	@echo "Step 2/3: Running tests..."
+	@$(MAKE) test
+	@echo "Step 3/3: Generating coverage report..."
+	@$(MAKE) coverage
+	@echo "Verification completed successfully"
