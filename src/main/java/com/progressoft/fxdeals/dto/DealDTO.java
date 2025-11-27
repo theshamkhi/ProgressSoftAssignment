@@ -1,7 +1,6 @@
-package com.progressoft.fxdeals.dto;
+package com.progressoft.fxdeals.dto.request;
 
 import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
