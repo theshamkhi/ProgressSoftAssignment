@@ -18,6 +18,16 @@ target/
 *.iml
 *.ipr
 
+# Logs
+logs/
+*.log
+log/
+
+# Spring Boot
+spring-boot-starter-*.jar
+application-*.properties
+!application-test.yml
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
