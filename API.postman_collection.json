@@ -1,0 +1,352 @@
+{
+  "info": {
+    "name": "ClusteredData Warehouse API",
+    "description": "Complete API collection for ClusteredData Warehouse - FX Deals Management System with CSV import, CRUD operations, and advanced queries",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "12345678",
+    "version": "2.0.0"
+  },
+  "item": [
+    {
+      "name": "Deal Management",
+      "description": "CRUD operations for individual deals",
+      "item": [
+        {
+          "name": "Create Single Deal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dealId\": \"DEAL001\",\n  \"fromCurrency\": \"USD\",\n  \"toCurrency\": \"EUR\",\n  \"dealTimestamp\": \"2025-01-15T10:30:00\",\n  \"dealAmount\": \"1000.50\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deals",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals"]
+            },
+            "description": "Create a single FX deal. Returns 201 Created on success, 409 Conflict if duplicate ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Batch Deals",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deals\": [\n    {\n      \"dealId\": \"DEAL200\",\n      \"fromCurrency\": \"USD\",\n      \"toCurrency\": \"EUR\",\n      \"dealTimestamp\": \"2025-01-15T10:30:00\",\n      \"dealAmount\": \"1000.50\"\n    },\n    {\n      \"dealId\": \"DEAL201\",\n      \"fromCurrency\": \"GBP\",\n      \"toCurrency\": \"USD\",\n      \"dealTimestamp\": \"2025-01-15T11:00:00\",\n      \"dealAmount\": \"2500.75\"\n    },\n    {\n      \"dealId\": \"DEAL202\",\n      \"fromCurrency\": \"EUR\",\n      \"toCurrency\": \"JPY\",\n      \"dealTimestamp\": \"2025-01-15T12:30:00\",\n      \"dealAmount\": \"3200.25\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deals/batch",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals", "batch"]
+            },
+            "description": "Create multiple FX deals in a single request. Returns statistics with success/failure/duplicate counts."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Deals (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/deals?page=0&size=20&sortBy=createdAt&direction=DESC",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Page number (0-based)"
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt",
+                  "description": "Field to sort by (dealId, createdAt, dealTimestamp, dealAmount)"
+                },
+                {
+                  "key": "direction",
+                  "value": "DESC",
+                  "description": "Sort direction (ASC/DESC)"
+                }
+              ]
+            },
+            "description": "Get all deals with pagination and sorting. Default: 20 items per page, sorted by creation date descending."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Deal by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/deals/DEAL001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals", "DEAL001"]
+            },
+            "description": "Get a specific deal by its ID. Returns 404 if not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Total Deals Count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/deals/count",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals", "count"]
+            },
+            "description": "Get the total number of deals in the system"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CSV Import",
+      "description": "Bulk import operations from CSV files",
+      "item": [
+        {
+          "name": "Import Deals from CSV",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "deals.csv",
+                  "description": "CSV file with headers: dealId,fromCurrency,toCurrency,dealTimestamp,dealAmount"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deals/csv/import",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals", "csv", "import"]
+            },
+            "description": "Import FX deals from a CSV file. Returns detailed statistics including success/failure/duplicate counts and specific error messages."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health & Status",
+      "description": "Service health checks and status endpoints",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/deals/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals", "health"]
+            },
+            "description": "Check if the application is running and healthy"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Testing Examples",
+      "description": "Example requests for testing various scenarios",
+      "item": [
+        {
+          "name": "Test - Valid Deal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dealId\": \"TEST001\",\n  \"fromCurrency\": \"USD\",\n  \"toCurrency\": \"EUR\",\n  \"dealTimestamp\": \"2025-01-15T10:30:00\",\n  \"dealAmount\": \"1000.50\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deals",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals"]
+            },
+            "description": "Test creating a valid deal"
+          },
+          "response": []
+        },
+        {
+          "name": "Test - Duplicate Deal (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dealId\": \"TEST001\",\n  \"fromCurrency\": \"GBP\",\n  \"toCurrency\": \"JPY\",\n  \"dealTimestamp\": \"2025-01-15T11:00:00\",\n  \"dealAmount\": \"2000.00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deals",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals"]
+            },
+            "description": "Test duplicate deal ID (should return 409 Conflict). Run 'Test - Valid Deal' first."
+          },
+          "response": []
+        },
+        {
+          "name": "Test - Invalid Currency (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dealId\": \"TEST002\",\n  \"fromCurrency\": \"XXX\",\n  \"toCurrency\": \"EUR\",\n  \"dealTimestamp\": \"2025-01-15T10:30:00\",\n  \"dealAmount\": \"1000.50\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deals",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals"]
+            },
+            "description": "Test invalid currency code (XXX is blacklisted)"
+          },
+          "response": []
+        },
+        {
+          "name": "Test - Negative Amount (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dealId\": \"TEST003\",\n  \"fromCurrency\": \"USD\",\n  \"toCurrency\": \"EUR\",\n  \"dealTimestamp\": \"2025-01-15T10:30:00\",\n  \"dealAmount\": \"-500.00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deals",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals"]
+            },
+            "description": "Test negative amount (should return 400 Bad Request)"
+          },
+          "response": []
+        },
+        {
+          "name": "Test - Invalid Timestamp (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dealId\": \"TEST004\",\n  \"fromCurrency\": \"USD\",\n  \"toCurrency\": \"EUR\",\n  \"dealTimestamp\": \"2025-01-15 10:30:00\",\n  \"dealAmount\": \"1000.50\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deals",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals"]
+            },
+            "description": "Test invalid timestamp format (missing 'T' separator)"
+          },
+          "response": []
+        },
+        {
+          "name": "Test - Missing Fields (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dealId\": \"TEST005\",\n  \"fromCurrency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deals",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals"]
+            },
+            "description": "Test missing required fields"
+          },
+          "response": []
+        },
+        {
+          "name": "Test - Batch with Mixed Results",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deals\": [\n    {\n      \"dealId\": \"BATCH001\",\n      \"fromCurrency\": \"USD\",\n      \"toCurrency\": \"EUR\",\n      \"dealTimestamp\": \"2025-01-15T10:30:00\",\n      \"dealAmount\": \"1000.50\"\n    },\n    {\n      \"dealId\": \"BATCH002\",\n      \"fromCurrency\": \"XXX\",\n      \"toCurrency\": \"EUR\",\n      \"dealTimestamp\": \"2025-01-15T11:00:00\",\n      \"dealAmount\": \"2000.00\"\n    },\n    {\n      \"dealId\": \"BATCH003\",\n      \"fromCurrency\": \"GBP\",\n      \"toCurrency\": \"JPY\",\n      \"dealTimestamp\": \"2025-01-15T12:00:00\",\n      \"dealAmount\": \"3000.00\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deals/batch",
+              "host": ["{{base_url}}"],
+              "path": ["api", "deals", "batch"]
+            },
+            "description": "Test batch with one valid, one invalid currency, and one valid deal"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ]
+}
