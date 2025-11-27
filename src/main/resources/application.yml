@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: FX Deals Importer
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/fxdeals}
+    username: ${DATABASE_USERNAME:fxuser}
+    password: ${DATABASE_PASSWORD:fxpass}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+logging:
+  level:
+    com.progressoft.fxdeals: INFO
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{HH:mm:ss} - %msg%n"
+  file:
+    name: logs/fxdeals.log
+
+server:
+  port: 8080
