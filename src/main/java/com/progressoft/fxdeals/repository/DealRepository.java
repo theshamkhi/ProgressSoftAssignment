@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DealRepository extends JpaRepository<Deal, String> {
-
-    boolean existsByDealId(String dealId);
 }
